@@ -64,9 +64,9 @@ void Graph::BFS(int v)
     q.push(nodes[v].d);
     visited[v] = true;
 
-    // for each visited element, check its adjacent nodes and push it
-    // onto the stack.
-    // Run until stack is empty (no more nodes to print)
+    // for each visited element, check its adjacent nodes to see if they're visited
+    // push any unvisited adjacent nodes onto the queue.
+    // Run until queue is empty (no more nodes to print)
     while (!q.empty()) {
         int n = q.front();
         q.pop();
@@ -95,8 +95,8 @@ void Graph::DFS(int v)
     s.push(nodes[v].d);
     visited[v] = true;
 
-    // for each visited element, check its adjacent nodes and push it
-    // onto the stack.
+    // for each visited element, check its adjacent nodes to see if they're visited
+    // push any unvisited adjacent nodes onto the stack.
     // Run until stack is empty (no more nodes to print)
     while (!s.empty()) {
         int n = s.top();
