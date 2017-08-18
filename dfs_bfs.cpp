@@ -31,10 +31,15 @@ struct Graph {
     Node *nodes;  // number of vertices
 
     Graph(int V);
+    ~Graph();
     void addEdge(int v, int e);
     void DFS(int v);
     void BFS(int v);
 };
+
+Graph::~Graph() {
+    delete [] nodes;
+}
 
 Graph::Graph(int V)
 {
@@ -114,8 +119,8 @@ void Graph::DFS(int v)
 }
 
 int main() {
-
-    Graph g(5);
+    int n = 4;
+    Graph g(n + 1); // starting at 1 instead of 0
     g.addEdge(3,1);
     g.addEdge(3,4);
     g.addEdge(2,4);
