@@ -8,53 +8,75 @@
 
 using namespace std;
 
-class Graph {
-    int V;  // number of vertices
-    list <int> *adj;    // list of edges
+struct Node {
+    int d;
+    bool visited;
+    vector<int> adj;
 
-public:
+    Node() {};
+    Node(int d);
+    void addEdge(int e);
+};
+
+Node::Node(int d) {
+    this->d = d;
+}
+
+void Node::addEdge(int e) {
+    this->adj.push_back(e);
+}
+
+struct Graph {
+    int size;
+    Node *nodes;  // number of vertices
+
     Graph(int V);
     void addEdge(int v, int e);
     void DFS(int v);
     void BFS(int v);
-    void DFSRun(int v, bool visited[]);     //helper function for DFS that uses recursion instead of a stack
 };
 
 Graph::Graph(int V)
 {
-    this->V = V;
-    adj = new list<int>[V];
+    size = V;
+    nodes = new Node[V];
+    for (int i = 0; i < V; i++) {
+        nodes[i].d = i;
+        nodes[i].visited = false;
+    }
 }
 
 void Graph::addEdge(int v, int e)
 {
-    adj[v].push_back(e);
+    nodes[v].addEdge(e);        // v to e
+    nodes[e].addEdge(v);       //  e to v
 }
 
-void Graph::BFS(int v) {
-    bool *visited = new bool[V];
-    for (int i = 0; i < V; i++) {   // initialize to false
+void Graph::BFS(int v)
+{
+    // array to keep track of which node was already visited
+    bool *visited = new bool[size];
+    for (int i = 0; i < size; i++) {   // initialize to false
         visited[i] = false;
     }
 
     queue<int> q;
+    q.push(nodes[v].d);
+    visited[v] = true;
 
-    //visited[v] = true;
-    q.push(v);
-
-    while(!q.empty()) {
-        // dequeue and print the value
-        int c = q.front();
+    // for each visited element, check its adjacent nodes and push it
+    // onto the stack.
+    // Run until stack is empty (no more nodes to print)
+    while (!q.empty()) {
+        int n = q.front();
         q.pop();
-        cout << c << " ";
 
-        // keep adding onto the queue adjacent nodes that are not yet visited
-        // and then mark them as visited
-        list<int>::iterator i;
-        for (i = adj[c].begin(); i != adj[c].end(); i++) {
-            if(!visited[*i]) {
-                visited[*i] = true;
-                q.push(*i);
+        cout << n << " ";
+        vector <int> adj = nodes[n].adj;
+        for (int i = 0; i < adj.size(); i++) {
+            if (!visited[adj[i]]) {
+                visited[adj[i]] = true;
+                q.push(nodes[adj[i]].d);
             }
         }
     }
@@ -63,62 +85,48 @@ void Graph::BFS(int v) {
 
 void Graph::DFS(int v)
 {
-    bool *visited = new bool[V];
-    for (int i = 0; i < V; i++) {   // initialize to false
+    // array to keep track of which node was already visited
+    bool *visited = new bool[size];
+    for (int i = 0; i < size; i++) {   // initialize to false
         visited[i] = false;
     }
 
-    //DFSRun(v, visited);   // uses recursion instead of a stack
+    stack<int> s;
+    s.push(nodes[v].d);
+    visited[v] = true;
 
-    stack <int> s;
-    s.push(v);
-
-    while(!s.empty()) {     // run until stack is empty (no more nodes to print)
-        // print current node on top of stack and remove it from the stack
-        list <int>::iterator i;
-        int current = s.top();
+    // for each visited element, check its adjacent nodes and push it
+    // onto the stack.
+    // Run until stack is empty (no more nodes to print)
+    while (!s.empty()) {
+        int n = s.top();
         s.pop();
-        cout << current << " ";
+        cout << n << " ";
 
-        // visit any unvisited adjacent nodes and push them onto the stack
-        for (i = adj[current].begin(); i != adj[current].end(); i++) {
-            if (!visited[*i]) {
-                visited[*i] = true;
-                s.push(*i);
+        vector <int> adj = nodes[n].adj;
+        for (int i = 0; i < adj.size(); i++) {
+            if (!visited[adj[i]]) {
+                visited[adj[i]] = true;
+                s.push(nodes[adj[i]].d);
             }
         }
     }
 }
 
-void Graph::DFSRun(int v, bool visited[]) {
-
-    visited[v] = true;
-    cout << v << " ";   // node is visited, print its value
-
-    list<int>::iterator i;
-
-    for (i = adj[v].begin(); i != adj[v].end(); i++) {
-        if (!visited[*i])
-            DFSRun(*i, visited);
-    }
-}
-
 int main() {
 
-    Graph g(7);
-    g.addEdge(0, 6);
-    g.addEdge(2, 1);
-    g.addEdge(2, 0);
-    g.addEdge(2, 3);
-    g.addEdge(3, 4);
-    g.addEdge(3, 6);
-    g.addEdge(1, 5);
+    Graph g(5);
+    g.addEdge(3,1);
+    g.addEdge(3,4);
+    g.addEdge(2,4);
+    g.addEdge(2,3);
+    g.addEdge(4,1);
 
     cout << "DFS: ";
-    g.DFS(2);
+    g.DFS(1);
     cout << endl;
     cout << "BFS: ";
-    g.BFS(2);
+    g.BFS(1);
 
     return 0;
 }
